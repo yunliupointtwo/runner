@@ -22,7 +22,7 @@ add_definitions(-Wall -O2)
 #-------------------------------------------------------------------------------
 
 # download and unpack gtest at config time
-configure_file(gtest.txt gtest/CMakeLists.txt)
+configure_file(GTest.in gtest/CMakeLists.txt)
 execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
   RESULT_VARIABLE result
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/build/gtest
@@ -41,6 +41,24 @@ endif()
 # This defines targets gtest and gtest_main
 add_subdirectory(${CMAKE_BINARY_DIR}/googletest-src
                  ${CMAKE_BINARY_DIR}/googletest-build)
+
+#-------------------------------------------------------------------------------
+# Doxygen
+#-------------------------------------------------------------------------------
+option(BUILD_DOC "Build Documentation" ON)
+
+# check if Doxygen is installed
+find_package(Doxygen)
+if (DOXYGEN_FOUND)
+  configure_file(${CMAKE_SOURCE_DIR}/Doxyfile.in  Doxyfile @ONLY)
+  add_custom_target(doc ${DOXYGEN_EXECUTABLE} Doxyfile
+    WORKING_DIRECTORY .
+    COMMENT "Generating documentation with Doxygen" VERBATIM
+  )
+
+else (DOXYGEN_FOUND)
+  message("Doxygen needs to be installed to generate documentation")
+endif()
 
 
 ##-------------------------------------------------------------------------------
